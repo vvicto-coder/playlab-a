@@ -53,7 +53,7 @@
   /* ───── 데이터 ───── */
   const App = { data: null, byId: {}, LS, SS, Logger, VARIANT };
   App.load = async function () {
-    const r = await fetch("data/contents.json?v=20261114");
+    const r = await fetch("data/contents.json?v=20261115");
     if (!r.ok) throw new Error("contents.json 로드 실패");
     App.data = await r.json();
     App.data.contents.forEach((c) => (App.byId[c.id] = c));

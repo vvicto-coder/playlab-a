@@ -1155,3 +1155,12 @@ body[data-page=brand] .site-footer{background:#101114;color:#8b8f98;border-color
 
 /* 데스크톱(901px↑): 브랜드관 타일 축소(10열) — 패스 6종 + 바로가기 4종 */
 @media (min-width:901px){.strip.brands{grid-auto-columns:calc((100% - 9 * 12px) / 10)}.btile .bw{font-size:clamp(13px,1.2vw,18px)}.btile .bw.star{font-size:clamp(16px,1.6vw,24px)}}
+
+/* 데스크톱(901px↑): 브랜드관 큰 카드를 가로형으로 축소 — 왼쪽 브랜드명·소개·버튼, 오른쪽 작은 포스터 4장 */
+@media (min-width:901px){
+  .brandcard{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n m" "t m" "g m";align-content:center;align-items:center;column-gap:32px;padding:22px 32px}
+  .brandcard .bw2{grid-area:n;align-self:end}
+  .brandcard small{grid-area:t;margin:6px 0 0;align-self:start}
+  .brandcard .go{grid-area:g;justify-self:start;margin-top:16px;padding:11px 36px;font-size:15px}
+  .brandcard .mini{grid-area:m;grid-template-columns:repeat(4,104px);gap:10px;margin:0}
+}
