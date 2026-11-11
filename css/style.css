@@ -1063,11 +1063,13 @@ body[data-page=brand] .site-footer{background:#101114;color:#8b8f98;border-color
 @media (max-width:640px){
   .strip.tiles{grid-auto-columns:23%}
   .strip.cw.wide{grid-auto-columns:41%}
-  .strip.shortsr{grid-auto-columns:30%;gap:10px}
+  .strip.shortsr{grid-auto-columns:59%;gap:12px}
   .tile .tpill{font-size:10px;white-space:nowrap;left:4px;right:4px;padding:1px 2px}
-  .card.short .thumb{aspect-ratio:2/3}
-  .card.short .sh-tit{left:8px;right:8px;bottom:26px;font-size:12px}
-  .card.short .sh-sub2{left:8px;right:8px;bottom:8px;font-size:10px}
+  .card.short .thumb{aspect-ratio:9/16}
+  .card.short .sh-tit{left:14px;right:14px;bottom:44px;font-size:18px}
+  .card.short .sh-sub2{left:14px;right:14px;bottom:16px;font-size:14px}
+  .strip.origs{grid-auto-columns:41%;gap:12px}
+  .strip.origs .card .thumb{aspect-ratio:1/2}
 }
 
 /* ───────── 리그 페이지 ───────── */
