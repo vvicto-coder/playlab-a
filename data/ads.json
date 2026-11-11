@@ -1,0 +1,15 @@
+{
+  "_comment": "인스트림 광고 시안(가상). PLAYLAB·상품·가격·할인율은 모두 가상 데이터이며 실제 판매·할인·배송을 의미하지 않음. 원본: PLAYLAB_인스트림광고_컬러버전_개별파일(1920x1080 PNG) → assets/ads 1280px JPEG",
+  "durations": { "preroll": 15, "midroll": 10, "endcard": 10 },
+  "ads": [
+    { "id": "pre1", "kind": "preroll", "name": "시그니처 블루 · 홈시네마", "image": "assets/ads/pre1.jpg" },
+    { "id": "pre2", "kind": "preroll", "name": "오렌지 · 스낵 라인업", "image": "assets/ads/pre2.jpg" },
+    { "id": "pre3", "kind": "preroll", "name": "포레스트 그린 · 캠핑 라이프", "image": "assets/ads/pre3.jpg" },
+    { "id": "mid1", "kind": "midroll", "name": "딥 블루 · 홈 프로젝터", "image": "assets/ads/mid1.jpg" },
+    { "id": "mid2", "kind": "midroll", "name": "스포츠 레드 · 스포츠 응원", "image": "assets/ads/mid2.jpg" },
+    { "id": "mid3", "kind": "midroll", "name": "민트 · 집콕 라이프", "image": "assets/ads/mid3.jpg" },
+    { "id": "end1", "kind": "endcard", "name": "네이비·골드 · 겨울 라이프", "image": "assets/ads/end1.jpg" },
+    { "id": "end2", "kind": "endcard", "name": "버건디 · 콘텐츠 굿즈", "image": "assets/ads/end2.jpg" },
+    { "id": "end3", "kind": "endcard", "name": "아이스 블루 · 멤버십 혜택", "image": "assets/ads/end3.jpg" }
+  ]
+}

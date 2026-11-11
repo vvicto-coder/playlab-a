@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PLAYLAB · A안 premium 구독</title>
+<meta name="description" content="교육용 비영리 UI/UX A/B 테스트 페이지(A안) premium 구독 안내. 요금·혜택은 가상이며 실제 구독·결제는 진행되지 않습니다.">
+<link rel="stylesheet" href="css/tokens.css?v=2">
+<link rel="stylesheet" href="css/style.css?v=51">
+</head>
+<body data-page="premium">
+<header class="gnb" id="gnb"></header>
+<main id="app" class="pm" aria-live="polite">
+  <div class="pm-wrap">
+    <a class="pm-back" href="javascript:history.back()" aria-label="뒤로">←</a>
+    <div class="pm-logo"><i></i><b>premium</b></div>
+    <h1>구독하고 <em>광고 없이</em><br>시청하세요</h1>
+    <p class="pm-sub">시청 전·중간·종료 후 광고 없이, 끊김 없이 이어서 즐기는 멤버십 추가 혜택이에요.</p>
+    <ul class="pm-benefits">
+      <li><span class="ic">⏭</span><div><b>광고 없이 바로 재생</b><small>시작 전·시청 중·종료 후 광고가 나오지 않아요</small></div></li>
+      <li><span class="ic">✦</span><div><b>끊김 없는 이어보기</b><small>다음 회차까지 쉬지 않고 이어서 시청해요</small></div></li>
+      <li><span class="ic">▶</span><div><b>멤버십과 함께 이용</b><small>멤버십 혜택은 그대로, premium 혜택만 더해져요</small></div></li>
+    </ul>
+    <div class="pm-price"><div><small>premium</small><b>월 <span>4,900원</span></b></div><p>언제든지 해지할 수 있습니다.<br>※ 요금은 가상이며 실제 결제는 진행되지 않습니다.</p></div>
+    <button class="btn buy pm-cta" id="pm-sub">premium 구독하기</button>
+    <button class="btn gray pm-later" id="pm-later">나중에 하기</button>
+  </div>
+</main>
+<script src="js/common.js?v=26"></script>
+<script>
+  App.mountShell();
+  const from = new URLSearchParams(location.search).get("from") || "direct";
+  App.Logger.log("page_view", { section: "premium", value: from });
+  document.getElementById("pm-sub").addEventListener("click", () => {
+    App.Logger.log("membership_modal_join", { value: "premium", section: "premium_" + from });
+    App.toast("교육용 페이지입니다. 실제 구독·결제는 진행되지 않아요.");
+  });
+  document.getElementById("pm-later").addEventListener("click", () => {
+    App.Logger.log("membership_modal_close", { value: "premium", section: "premium_" + from });
+    history.length > 1 ? history.back() : (location.href = "index.html");
+  });
+</script>
+</body>
+</html>

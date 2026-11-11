@@ -1,0 +1,28 @@
+/* 디자인 토큰 — A·B안 공유 예정 (교육용 비영리 테스트, 가상 서비스 PLAYLAB) */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f4f5f7;
+  --text: #111111;
+  --text-sub: #6b7078;
+  --line: #e5e7eb;
+  --primary: #1a8cff;
+  --primary-press: #0f78e6;
+  --accent-tagline: #f5c518;
+  --danger: #e5484d;
+  --card-radius: 8px;
+  --btn-radius: 12px;
+  --chip-radius: 999px;
+  --gutter: 28px;
+  --gnb-h: 72px;
+  --font: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, "Segoe UI", sans-serif;
+}
+body.dark {
+  --bg: #16181d;
+  --bg-soft: #22252b;
+  --text: #f2f3f5;
+  --text-sub: #a0a5ad;
+  --line: #343841;
+}
+@media (max-width: 640px) {
+  :root { --gutter: 16px; --gnb-h: 56px; }
+}
