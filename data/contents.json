@@ -3261,6 +3261,20 @@
             "label": "도시의 온도",
             "type": "content",
             "target": "c097"
+          },
+          {
+            "label": "출석체크 이벤트",
+            "type": "event"
+          },
+          {
+            "label": "현장 기록 24시",
+            "type": "content",
+            "target": "c118"
+          },
+          {
+            "label": "회사원 김대리",
+            "type": "content",
+            "target": "c095"
           }
         ],
         "friction": "P3: 이벤트·작품·카테고리가 한 줄에 혼재 — 개별구매 작품은 이 줄과 아래 구매 이벤트 줄에만 노출"
@@ -3427,6 +3441,21 @@
             "target": "c071",
             "pill": "지금 구매하기",
             "buy": true
+          },
+          {
+            "label": "교실 밖 청춘",
+            "type": "content",
+            "target": "c096"
+          },
+          {
+            "label": "무대 위의 사람들",
+            "type": "content",
+            "target": "c119"
+          },
+          {
+            "label": "마지막 출근",
+            "type": "content",
+            "target": "c018"
           }
         ]
       },
