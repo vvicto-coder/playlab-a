@@ -174,7 +174,7 @@
     if (c) { st.cat = c.dataset.cat; st.league = null; L.log("sports_tab_click", { section: "sports", value: st.cat }); renderLeagues(); renderSched(); renderSpot(); return; }
     if (e.target.closest("[data-my]")) { App.toast("교육용 테스트 페이지: 마이 리그 설정은 제공되지 않아요."); return; }
     const lgi = e.target.closest("[data-l]");
-    if (lgi) { st.league = st.league === lgi.dataset.l ? null : lgi.dataset.l; L.log("league_click", { target_id: lgi.dataset.l, section: "sports" }); renderLeagues(); renderSched(); renderSpot(); return; }
+    if (lgi) { L.log("league_click", { target_id: lgi.dataset.l, section: "sports" }); location.href = "league.html?id=" + encodeURIComponent(lgi.dataset.l); return; }   // 리그 아이콘 → 리그 페이지
     const sl = e.target.closest("[data-sl]");
     if (sl) { st.league = sl.dataset.sl || null; L.log("league_click", { target_id: sl.dataset.sl || "all", section: "sports_schedule" }); renderLeagues(); renderSched(); renderSpot(); return; }
     const w = e.target.closest("[data-wish]");

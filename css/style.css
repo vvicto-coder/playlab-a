@@ -1057,3 +1057,84 @@ body[data-page=brand] .site-footer{background:#101114;color:#8b8f98;border-color
 
 /* 모바일: 카테고리 호버/포커스 패널은 열리지 않음 — 버튼을 눌러 '모든 카테고리' 화면으로만 이동 */
 @media (max-width:640px){.catpanel{display:none!important}}
+
+/* ───────── 홈: 이벤트 타일 정사각형 · 시청 중 / 하이라이트 숏츠 카드 크기(모바일) ───────── */
+.tile{aspect-ratio:1/1}
+@media (max-width:640px){
+  .strip.tiles{grid-auto-columns:23%}
+  .strip.cw.wide{grid-auto-columns:41%}
+  .strip.shortsr{grid-auto-columns:30%;gap:10px}
+  .tile .tpill{font-size:10px;white-space:nowrap;left:4px;right:4px;padding:1px 2px}
+  .card.short .thumb{aspect-ratio:2/3}
+  .card.short .sh-tit{left:8px;right:8px;bottom:26px;font-size:12px}
+  .card.short .sh-sub2{left:8px;right:8px;bottom:8px;font-size:10px}
+}
+
+/* ───────── 리그 페이지 ───────── */
+.lg-page{max-width:760px;margin:0 auto;background:var(--bg);min-height:70vh}
+.lg-top-bar{background:color-mix(in srgb,var(--lc) 38%,#1a0b2e);color:#fff;position:sticky;top:0;z-index:30}
+.lg-bar{display:flex;align-items:center;gap:12px;padding:14px 16px 6px}
+.lg-bar h1{flex:1;margin:0;font-size:24px;font-weight:800}
+.lg-bar .ac-back{background:none;border:0;color:#fff;font-size:28px;line-height:1;padding:0 4px}
+.lg-bar span{display:flex;gap:8px}
+.lg-bar span button{width:52px;height:46px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;font-size:22px}
+.lg-tabs{display:grid;grid-template-columns:repeat(4,1fr);padding:0 6px}
+.lg-tabs button{background:none;border:0;border-bottom:3px solid transparent;color:rgba(255,255,255,.75);font-size:16px;font-weight:600;padding:14px 0}
+.lg-tabs button.on{color:#fff;border-color:#fff}
+.lg-body{padding-bottom:40px}
+.lg-sec{padding:20px 16px 8px}
+.lg-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.lg-h h2{margin:0;font-size:22px}.lg-h h2 small{font-size:14px;color:var(--text-sub);font-weight:500}
+.lg-h button{background:none;border:0;font-size:15px;color:var(--text)}
+.lg-chips{display:flex;gap:8px;margin-bottom:14px}
+.lg-chips button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 18px;font-size:15px;color:var(--text)}
+.lg-chips button.on{background:#7d8398;border-color:#7d8398;color:#fff}
+.lg-match{position:relative;display:grid;grid-template-columns:1fr 62px;background:#eaf1ff;border-radius:12px;margin-bottom:12px;overflow:hidden;min-height:140px}
+.lg-tags{position:absolute;left:0;top:0;display:flex;z-index:2;font-size:12px;font-weight:700}
+.lg-tags i{font-style:normal;background:#6b7078;color:#fff;padding:4px 10px}
+.lg-tags i.pass{background:#119bff;font-style:italic;border-radius:0 0 0 0}
+.lg-mbody{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:34px 10px 14px;text-align:center}
+.lg-mbody .tm{display:grid;justify-items:center;gap:6px;font-size:14px}
+.lg-mbody .tm.solo{grid-column:1/-1;grid-row:1}
+.lg-mbody .tlogo{width:52px;height:52px;font-size:14px}
+.lg-mbody .md b{display:block;font-size:19px}.lg-mbody .md small{color:var(--text-sub);font-size:13px}
+.lg-mbody .md .sc{font-size:26px}
+.lg-match.solo .lg-mbody{grid-template-columns:1fr}
+.lg-bell{background:#d6e1fb;border:0;display:grid;place-items:center;align-content:center;gap:2px;color:#1a73e8;font-size:20px}
+.lg-bell em{font-style:normal;font-size:13px;font-weight:800}
+.lg-bell.on{background:#bcd0fb}
+.lg-dots{display:flex;gap:10px;justify-content:center;padding:10px 0}
+.lg-dots i{width:9px;height:9px;border-radius:50%;background:#c6cbd6}.lg-dots i.on{background:#1a73e8}
+.lg-empty{color:var(--text-sub);padding:16px 0}
+.lg-top{background:linear-gradient(180deg,#1b6fe8,#3a8bff);color:#fff;padding:22px 0 18px;margin-top:14px}
+.lg-top h2{margin:0 16px 14px;font-size:26px}
+.lg-strip{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:14px;overflow-x:auto;padding:0 16px 6px;scrollbar-width:none}
+.lg-strip::-webkit-scrollbar{display:none}
+.lg-v{position:relative;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;min-width:0}
+.lg-v .th{position:relative;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#333}
+.lg-v .th img{width:100%;height:100%;object-fit:cover;display:block}
+.lg-v .lg-tags{top:0}
+.lg-v .k4,.lg-v .du{position:absolute;bottom:8px;font-size:12px;font-weight:800;color:#fff}
+.lg-v .k4{left:10px}.lg-v .du{right:8px;background:rgba(0,0,0,.65);border-radius:6px;padding:2px 7px}
+.lg-v>b{display:block;margin-top:8px;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-v>small{display:block;font-size:13px;opacity:.85}
+.lg-top .lg-v .th{border-radius:12px}
+.lg-v .rk{position:absolute;z-index:3;left:-4px;bottom:44px;font-size:70px;font-weight:900;line-height:1;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
+.lg-v.rep .th{background:var(--c,#d22);display:grid;place-items:center;align-content:center;gap:8px;color:#fff;text-align:center}
+.lg-v.rep .th b{font-size:18px}.lg-v.rep .th .rt{position:absolute;left:0;top:0;background:#119bff;font-size:12px;padding:4px 10px;border-radius:0 0 5px 0;font-style:italic}
+.lg-v.rep .tlogo{width:64px;height:64px;background:rgba(255,255,255,.25)}
+.lg-grp{border-top:10px solid #f1f2f5;margin-top:10px;padding:18px 0 14px}
+.lg-grp .dt{margin:0 16px 14px;font-size:16px;color:#444}
+.lg-grp .vs{display:flex;align-items:center;gap:10px;padding:0 16px 14px;font-size:18px;font-weight:700}
+.lg-grp .vs em{flex:1;text-align:center;font-style:normal;font-weight:500;color:var(--text-sub)}
+.lg-grp .vs .tlogo{width:30px;height:30px;font-size:10px}
+.lg-grp .vs.solo{font-size:17px}
+.lg-vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 12px}
+.lg-tbl{width:100%;border-collapse:collapse;font-size:15px}
+.lg-tbl th,.lg-tbl td{padding:12px 6px;text-align:center;border-bottom:1px solid var(--line)}
+.lg-tbl th{font-size:13px;color:var(--text-sub);font-weight:600}
+.lg-tbl .l{text-align:left}.lg-tbl td.l{display:flex;align-items:center;gap:10px}
+.lg-tbl .tlogo{width:30px;height:30px;font-size:10px}
+.lg-note{color:var(--text-sub);font-size:12px;padding:12px 0}
+@media (min-width:641px){.lg-strip{grid-auto-columns:300px}.lg-page{box-shadow:0 0 0 1px var(--line)}}
+@media (max-width:640px){body[data-page=league] .gnb{display:none}}
