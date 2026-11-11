@@ -1140,3 +1140,15 @@ body[data-page=brand] .site-footer{background:#101114;color:#8b8f98;border-color
 .lg-note{color:var(--text-sub);font-size:12px;padding:12px 0}
 @media (min-width:641px){.lg-strip{grid-auto-columns:300px}.lg-page{box-shadow:0 0 0 1px var(--line)}}
 @media (max-width:640px){body[data-page=league] .gnb{display:none}}
+
+/* 데스크톱(641px↑): 승부예측 이벤트 타일·하이라이트 숏츠를 더 작게 */
+@media (min-width:641px){
+  .strip.tiles{grid-auto-columns:calc((100% - 5 * 10px) / 6)}
+  .strip.shortsr{grid-auto-columns:calc((100% - 3 * 12px) / 4)}
+}
+@media (min-width:901px){
+  .strip.tiles{grid-auto-columns:calc((100% - 9 * 10px) / 10)}
+}
+@media (min-width:1101px){
+  .strip.shortsr{grid-auto-columns:calc((100% - 4 * 12px) / 5)}
+}
