@@ -1164,3 +1164,12 @@ body[data-page=brand] .site-footer{background:#101114;color:#8b8f98;border-color
   .brandcard .go{grid-area:g;justify-self:start;margin-top:16px;padding:11px 36px;font-size:15px}
   .brandcard .mini{grid-area:m;grid-template-columns:repeat(4,104px);gap:10px;margin:0}
 }
+
+/* 관심사 선택 시트 */
+.int-modal{max-width:520px}
+.int-modal h2{font-size:22px}
+.int-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 6px}
+.int-chips button{border:1.5px solid #d6d9de;background:#fff;color:#222;border-radius:999px;padding:10px 6px;font-weight:700;font-size:14px}
+.int-chips button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.int-modal .btn.primary:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:640px){.int-chips{grid-template-columns:repeat(3,1fr)}}

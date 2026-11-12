@@ -125,6 +125,18 @@
     }
   }
 
+  if (PAGE === "home") {                                  // 회원님이 좋아할 만한 콘텐츠: 관심사 기반, 홈 아래쪽에 배치(기존 고정 '내가 좋아할 만한' 줄 대체)
+    const free = App.data.contents.filter((c) => c.access === "subscription" && c.image);
+    const it = App.Pers.interests() || [];
+    const chips = it.filter((g) => free.some((c) => App.Pers.matches(c, g)));
+    const liked = free.filter((c) => chips.some((g) => App.Pers.matches(c, g)));
+    const items = App.Pers.rank(liked.length >= 4 ? liked : free).slice(0, 12).map((c) => c.id);
+    const row = { kind: "row", title: liked.length >= 4 ? `회원님이 좋아할 만한 ${chips.join(" · ")}` : "회원님이 좋아할 만한 콘텐츠", items };
+    const lay = H.layout.filter((b) => b.title !== "내가 좋아할 만한 콘텐츠");
+    const at = lay.findIndex((b) => b.title === "다큐멘터리 · 시사교양");   // 홈 중·하단
+    lay.splice(at >= 0 ? at + 1 : Math.floor(lay.length * 0.65), 0, row);
+    H = Object.assign({}, H, { layout: lay });
+  }
   root.innerHTML = hero() + H.layout.map(block).join("");
   bindHero();
   if (PAGE === "home") {                                  // 실제처럼 긴 홈의 맨 아래: 서비스 정보(가상)

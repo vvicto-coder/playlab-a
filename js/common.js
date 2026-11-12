@@ -114,7 +114,7 @@
     f.querySelector("#dl-log").addEventListener("click", (e) => { e.preventDefault(); Logger.download(); });
     f.querySelector("#clear-log").addEventListener("click", (e) => { e.preventDefault(); Logger.clear(); App.toast("로그를 초기화했어요"); });
 
-    if (!LS.get("consent_A", false)) App.showConsent();
+    if (!LS.get("consent_A", false)) App.showConsent(); else App.showInterest();
   };
 
   App.showConsent = function () {
@@ -136,7 +136,58 @@
       Logger.log("consent_accept");
       ov.remove();
       document.body.classList.remove("no-scroll");
+      App.showInterest();
     });
+  };
+
+  /* ───── 관심사 선택(1~3개, 건너뛰기 가능, 브라우저에만 저장) + 점수 — 홈 '회원님이 좋아할 만한 콘텐츠'용 ───── */
+  const INTEREST_CHIPS = {
+    "드라마": ["드라마", "하이틴", "의학"], "로맨스": ["로맨스", "로맨틱 코미디"], "코미디": ["코미디", "예능", "리얼리티"], "액션": ["액션", "히어로", "밀리터리"],
+    "SF": ["SF"], "판타지": ["판타지", "동화"], "애니메이션": ["애니메이션"], "키즈": ["키즈", "유아", "가족", "동요"],
+    "다큐멘터리": ["다큐멘터리", "자연", "동물"], "시사교양": ["시사교양", "역사"], "음식": ["음식"], "음악": ["음악", "공연", "뮤지컬"],
+  };
+  const groupOf = (chip) => INTEREST_CHIPS[chip] || [chip];
+  const overlapG = (c, g) => c.genres.some((x) => g.includes(x));
+  App.Pers = {
+    CHIPS: Object.keys(INTEREST_CHIPS),
+    interests: () => LS.get("interest_A", null),               // null = 아직 묻지 않음, [] = 건너뜀
+    matches: (c, chip) => overlapG(c, groupOf(chip)),
+    /* 점수 = 선택 장르 일치(+3) + 찜한 작품과 장르 일치(+2) + 평점 보정(+0~1). 같은 점수는 작품 ID 순 */
+    rank(list) {
+      const want = (this.interests() || []).flatMap(groupOf);
+      const wished = [...new Set(App.wish.list().map((id) => App.byId[id]).filter(Boolean).flatMap((c) => c.genres))];
+      const sc = (c) => (want.length && overlapG(c, want) ? 3 : 0) + (wished.length && overlapG(c, wished) ? 2 : 0) + Math.max(0, Math.min(1, (c.rating - 3) / 2));
+      return list.slice().sort((a, z) => sc(z) - sc(a) || a.id.localeCompare(z.id));
+    },
+  };
+  App.showInterest = function () {
+    if (App.Pers.interests() !== null || document.querySelector(".overlay.interest")) return;
+    const ov = document.createElement("div");
+    ov.className = "overlay interest";
+    const picked = [];
+    ov.innerHTML = `<div class="modal int-modal" role="dialog" aria-modal="true" aria-labelledby="int-t">
+      <h2 id="int-t">어떤 콘텐츠를 좋아하세요?</h2>
+      <p>관심 있는 장르를 <b>1~3개</b> 골라 주시면 홈에서 취향에 맞는 콘텐츠를 보여드려요. (브라우저에만 저장돼요)</p>
+      <div class="int-chips">${App.Pers.CHIPS.map((g) => `<button type="button" data-g="${App.esc(g)}" aria-pressed="false">${App.esc(g)}</button>`).join("")}</div>
+      <p class="fine int-cnt"></p>
+      <div class="modal-actions"><button class="btn" data-a="skip">건너뛰기</button><button class="btn primary" data-a="ok">선택 완료</button></div></div>`;
+    document.body.appendChild(ov);
+    document.body.classList.add("no-scroll");
+    const ok = ov.querySelector('[data-a="ok"]'), cnt = ov.querySelector(".int-cnt");
+    const upd = () => { ok.disabled = !picked.length; cnt.textContent = picked.length ? `${picked.length}개 선택 (최대 3개)` : "1개 이상 선택해 주세요."; };
+    upd();
+    ov.querySelector(".int-chips").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-g]"); if (!b) return;
+      const g = b.dataset.g, i = picked.indexOf(g);
+      if (i >= 0) picked.splice(i, 1);
+      else if (picked.length < 3) picked.push(g);
+      else { App.toast("관심사는 최대 3개까지 고를 수 있어요."); return; }
+      b.classList.toggle("on", picked.includes(g)); b.setAttribute("aria-pressed", picked.includes(g)); upd();
+    });
+    const close = (list) => { LS.set("interest_A", list); ov.remove(); document.body.classList.remove("no-scroll"); if (/index\.html$|\/$/.test(location.pathname)) location.reload(); };
+    ok.addEventListener("click", () => { if (!picked.length) return; picked.forEach((g) => Logger.log("onboarding_interest_select", { value: g, section: "onboarding" })); close(picked.slice()); });
+    ov.querySelector('[data-a="skip"]').addEventListener("click", () => { Logger.log("onboarding_skip", { section: "onboarding" }); close([]); });
+    ok.focus();
   };
 
   /* ───── 멤버십/구매 안내 모달 (모의, 결제 없음) ───── */
