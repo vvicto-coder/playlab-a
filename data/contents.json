@@ -3282,16 +3282,7 @@
       {
         "kind": "continue",
         "title": "시청 중인 콘텐츠",
-        "items": [
-          {
-            "id": "c104",
-            "progress": 0.45
-          },
-          {
-            "id": "c095",
-            "progress": 0.2
-          }
-        ]
+        "items": []
       },
       {
         "kind": "top20",

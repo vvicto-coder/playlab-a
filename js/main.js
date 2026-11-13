@@ -103,7 +103,7 @@
       case "continue":
         return `<section class="sec"><h2>${esc(b.title)}</h2>${strip("cw wide", b.items.map((it) => {
           const c = App.byId[it.id];
-          return card(c, { section: "continue", kind: "cw", below: `<div class="bar"><i style="width:${Math.round(it.progress * 100)}%"></i></div>` });
+          return card(c, { section: "continue", kind: "cw", below: it.progress != null ? `<div class="bar"><i style="width:${Math.round(it.progress * 100)}%"></i></div>` : "" });
         }).join(""))}</section>`;
       case "top20":
         return `<section class="sec"><h2>${esc(b.title)}</h2>${strip("poster", b.items.map((id, i) => card(App.byId[id], { section: "top20", kind: "poster", rank: i + 1 })).join(""))}</section>`;
@@ -125,6 +125,11 @@
     }
   }
 
+  if (PAGE === "home") {                                  // 시청 중인 콘텐츠: 고정 데이터 대신 실제 재생 기록(없으면 줄 숨김)
+    const bh0 = JSON.parse(localStorage.getItem("behav_A") || '{"click":[],"play":[]}');
+    const cont = (bh0.play || []).filter((id) => App.byId[id]).slice(0, 6).map((id) => ({ id }));
+    H = Object.assign({}, H, { layout: H.layout.map((b) => (b.kind === "continue" ? Object.assign({}, b, { items: cont }) : b)).filter((b) => b.kind !== "continue" || b.items.length) });
+  }
   if (PAGE === "home") {                                  // 회원님이 좋아할 만한 콘텐츠: 관심사 기반, 홈 아래쪽에 배치(기존 고정 '내가 좋아할 만한' 줄 대체)
     const free = App.data.contents.filter((c) => c.access === "subscription" && c.image);
     const it = App.Pers.interests() || [];
@@ -132,9 +137,19 @@
     const liked = free.filter((c) => chips.some((g) => App.Pers.matches(c, g)));
     const items = App.Pers.rank(liked.length >= 4 ? liked : free).slice(0, 12).map((c) => c.id);
     const row = { kind: "row", title: "내가 좋아할 만한 콘텐츠", items };
+    /* ○○을/를 보셨다면: 마지막 재생 → 찜 → 클릭 → 시청 중 작품(강철 날개) 순으로 기준 작품을 잡고, 같은 카테고리(장르가 겹치는) 작품만 보여준다 */
+    const bh = JSON.parse(localStorage.getItem("behav_A") || '{"click":[],"play":[]}');
+    const okC = (arr) => (arr || []).map((id) => App.byId[id]).filter((c) => c && c.access === "subscription" && c.image)[0];
+    const wishedC = App.wish.list().slice().reverse().map((id) => App.byId[id]).filter((c) => c && c.access === "subscription" && c.image)[0];
+    const playedC = okC(bh.play), clickedC = okC(bh.click);
+    const seed = playedC || wishedC || clickedC;       // 기록이 없으면 줄을 만들지 않음
+    const how = !playedC && wishedC ? "찜했다면" : "보셨다면";
+    const similar = !seed ? [] : App.Pers.rank(free.filter((c) => c.id !== seed.id && c.genres.some((g) => seed.genres.includes(g))));
+    const seenRow = { kind: "row", title: seed ? `${seed.title}${App.josa(seed.title, "을", "를")} ${how}` : "", items: similar.slice(0, 12).map((c) => c.id) };
     const lay = H.layout.filter((b) => !(b.kind === "row" && b.title === "내가 좋아할 만한 콘텐츠"));
     const at = lay.findIndex((b) => b.title === "다큐멘터리 · 시사교양");   // 홈 중·하단
     lay.splice(at >= 0 ? at + 1 : Math.floor(lay.length * 0.65), 0, row);
+    if (seenRow.items.length) lay.splice((at >= 0 ? at + 1 : Math.floor(lay.length * 0.65)) + 1, 0, seenRow);   // 좋아할 만한 줄 바로 아래
     H = Object.assign({}, H, { layout: lay });
   }
   root.innerHTML = hero() + H.layout.map(block).join("");

@@ -8,7 +8,8 @@
   L.log("page_view", { section: "profile" });
 
   /* 시청기록(가상): 홈 '시청 중' 작품 + 1편, 진행률 */
-  const hist = [["c104", 1, 0.62], ["c092", 1, 0.9], ["c018", 1, 0.15]].map(([id, ep, p]) => ({ c: App.byId[id], ep, p })).filter((x) => x.c);
+  const bh = JSON.parse(localStorage.getItem("behav_A") || '{"click":[],"play":[]}');   // 시청기록: 고정 데이터 대신 실제 재생 기록
+  const hist = (bh.play || []).map((id) => ({ c: App.byId[id], ep: (bh.ep || {})[id] || 1 })).filter((x) => x.c).slice(0, 8);
   const bought = App.data.contents.find((c) => c.access === "paid" && c.format === "movie");
   const wished = App.wish.list().map((id) => App.byId[id]).filter(Boolean);
   const reviews = App.LS.get("reviews_A", []).length;
@@ -33,7 +34,7 @@
       <div class="body"><label class="sw"><input type="checkbox" id="noti-sw" ${notiOn ? "checked" : ""}><span></span> 혜택 알림 ${notiOn ? "켜짐" : "꺼짐"}</label></div></section>
 
     <section class="pf-sec"><h2><a href="#" data-more="시청기록">시청기록 ›</a></h2>
-      <div class="pf-row">${hist.map((h) => `<a class="pf-w" href="detail.html?id=${h.c.id}" data-id="${h.c.id}">${thumb(h.c, `<span class="pf-play">▶</span><span class="pf-bar"><i style="width:${Math.round(h.p * 100)}%"></i></span>`)}<small>${esc(h.c.title)} ${h.ep}화</small></a>`).join("")}</div></section>
+      ${hist.length ? `<div class="pf-row">${hist.map((h) => `<a class="pf-w" href="detail.html?id=${h.c.id}" data-id="${h.c.id}">${thumb(h.c, `<span class="pf-play">▶</span>`)}<small>${esc(h.c.title)}${h.c.format === "movie" ? "" : " " + h.ep + "화"}</small></a>`).join("")}</div>` : '<div class="pf-empty">시청한 콘텐츠가 여기에서 보여집니다.</div>'}</section>
 
     <section class="pf-sec"><h2><a href="#" data-more="내 구독내역">내 구독내역 ›</a></h2></section>
 

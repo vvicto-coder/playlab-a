@@ -27,6 +27,12 @@
         if (t0) row.ttfp_ms = row.ts - t0;
         row.first_play = true;
       }
+      if (row.target_id && /^c\d+$/.test(row.target_id) && (event === "card_click" || event === "play_start")) {   // '보셨다면' 줄용: 최근 재생·클릭 작품
+        const k = event === "play_start" ? "play" : "click", b = LS.get("behav_A", { click: [], play: [] });
+        b[k] = [row.target_id].concat((b[k] || []).filter((x) => x !== row.target_id)).slice(0, 20);
+        if (event === "play_start" && row.value) { b.ep = b.ep || {}; b.ep[row.target_id] = row.value; }
+        LS.set("behav_A", b);
+      }
       const all = LS.get("ablog_A", []);
       all.push(row);
       LS.set("ablog_A", all.slice(-3000));
@@ -53,7 +59,7 @@
   /* ───── 데이터 ───── */
   const App = { data: null, byId: {}, LS, SS, Logger, VARIANT };
   App.load = async function () {
-    const r = await fetch("data/contents.json?v=20261115");
+    const r = await fetch("data/contents.json?v=20261116");
     if (!r.ok) throw new Error("contents.json 로드 실패");
     App.data = await r.json();
     App.data.contents.forEach((c) => (App.byId[c.id] = c));
@@ -109,9 +115,10 @@
     const f = document.createElement("footer");
     f.className = "site-footer";
     f.innerHTML = `<p>© 2026 교육용 UI/UX A/B 테스트 프로젝트 · 비영리 · 실제 서비스와 무관 · 모든 콘텐츠는 가상입니다.</p>
-      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a></p>`;
+      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a> · <a href="#" id="clear-watch">시청 기록 초기화</a></p>`;
     document.body.appendChild(f);
     f.querySelector("#dl-log").addEventListener("click", (e) => { e.preventDefault(); Logger.download(); });
+    f.querySelector("#clear-watch").addEventListener("click", (e) => { e.preventDefault(); LS.set("behav_A", { click: [], play: [] }); App.toast("시청 기록을 초기화했어요"); setTimeout(() => location.reload(), 600); });
     f.querySelector("#clear-log").addEventListener("click", (e) => { e.preventDefault(); Logger.clear(); App.toast("로그를 초기화했어요"); });
 
     if (!LS.get("consent_A", false)) App.showConsent(); else App.showInterest();
@@ -160,6 +167,8 @@
       return list.slice().sort((a, z) => sc(z) - sc(a) || a.id.localeCompare(z.id));
     },
   };
+  /* 받침 유무에 따라 조사 자동 선택: App.josa("강철 날개", "을", "를") */
+  App.josa = (w, a, b) => { const code = String(w).trim().slice(-1).charCodeAt(0); return code >= 0xac00 && code <= 0xd7a3 ? ((code - 0xac00) % 28 ? a : b) : b; };
   App.showInterest = function () {
     if (App.Pers.interests() !== null || document.querySelector(".overlay.interest")) return;
     const ov = document.createElement("div");
