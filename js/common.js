@@ -1,6 +1,8 @@
 /* 공통: 데이터 로드, 로거, 교육용 고지, 토스트, 유틸 — 교육용 비영리 테스트 페이지 */
 (function () {
   const VARIANT = "A";
+  const GA_ID = "G-CTRCG6DCHH";                       // 구글 애널리틱스 4 측정 ID(공개 값). 동의한 사람에게만 로드
+  const CONSENT_GA = "consent_ga_A";          // true=분석 동의, false=거부, 없음=아직 선택 안 함
   const LS = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -37,6 +39,7 @@
       all.push(row);
       LS.set("ablog_A", all.slice(-3000));
       if (window.console && console.debug) console.debug("[log]", row);
+      if (window.App && App.gaSend) { try { App.gaSend(event, row); } catch (e) {} }   // 분석 동의 시에만 설정됨
       return row;
     },
     rows() { return LS.get("ablog_A", []); },
@@ -59,7 +62,7 @@
   /* ───── 데이터 ───── */
   const App = { data: null, byId: {}, LS, SS, Logger, VARIANT };
   App.load = async function () {
-    const r = await fetch("data/contents.json?v=20261125");
+    const r = await fetch("data/contents.json?v=20261127");
     if (!r.ok) throw new Error("contents.json 로드 실패");
     App.data = await r.json();
     App.data.contents.forEach((c) => (App.byId[c.id] = c));
@@ -115,13 +118,39 @@
     const f = document.createElement("footer");
     f.className = "site-footer";
     f.innerHTML = `<p>© 2026 교육용 UI/UX A/B 테스트 프로젝트 · 비영리 · 실제 서비스와 무관 · 모든 콘텐츠는 가상입니다.</p>
-      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a> · <a href="#" id="clear-watch">시청 기록 초기화</a></p>`;
+      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a> · <a href="#" id="clear-watch">시청 기록 초기화</a> · <a href="#" id="ga-toggle">분석 동의 설정</a></p>`;
     document.body.appendChild(f);
     f.querySelector("#dl-log").addEventListener("click", (e) => { e.preventDefault(); Logger.download(); });
+    f.querySelector("#ga-toggle").addEventListener("click", (e) => { e.preventDefault(); const on = LS.get(CONSENT_GA, null) === true; LS.set(CONSENT_GA, !on); window["ga-disable-" + GA_ID] = on; App.toast(on ? "분석 동의를 철회했어요. 새로고침합니다." : "분석에 동의했어요. 새로고침합니다."); setTimeout(() => location.reload(), 700); });
     f.querySelector("#clear-watch").addEventListener("click", (e) => { e.preventDefault(); LS.set("behav_A", { click: [], play: [] }); App.toast("시청 기록을 초기화했어요"); setTimeout(() => location.reload(), 600); });
     f.querySelector("#clear-log").addEventListener("click", (e) => { e.preventDefault(); Logger.clear(); App.toast("로그를 초기화했어요"); });
 
-    if (!LS.get("consent_A", false)) App.showConsent(); else App.showInterest();
+    if (!LS.get("consent_A", false) || LS.get(CONSENT_GA, null) === null) App.showConsent(); else { App.initAnalytics(); App.showInterest(); }
+  };
+
+  /* ───── 구글 애널리틱스 4(GA4): 동의한 사람에게만 로드. 이름·연락처 등 개인정보는 보내지 않음 ───── */
+  App.analyticsTools = ["구글 애널리틱스(GA4)"];
+  const GA_RENAME = { page_view: "ab_page_view", ad_impression: "ab_ad_impression" };   // GA4 자동 수집·예약 이벤트 이름과 겹치는 것만 이름 변경
+  App.initAnalytics = function () {
+    if (window.__gaInit || LS.get(CONSENT_GA, null) !== true) return;
+    window.__gaInit = true;
+    window["ga-disable-" + GA_ID] = false;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA_ID);
+    document.head.appendChild(sc);
+    gtag("js", new Date());
+    gtag("set", "user_properties", { variant: VARIANT });
+    gtag("config", GA_ID, { variant: VARIANT, send_page_view: true, allow_google_signals: false, allow_ad_personalization_signals: false });
+    App.gaSend = function (event, row) {
+      const p = { variant: VARIANT };
+      if (row.target_id) p.target_id = String(row.target_id).slice(0, 100);
+      if (row.section) p.section = String(row.section).slice(0, 100);
+      if (row.value != null && row.value !== "") p.event_value = String(row.value).slice(0, 100);
+      if (typeof row.ttfp_ms === "number") p.ttfp_ms = row.ttfp_ms;
+      if (typeof row.ttfp_interest_ms === "number") p.ttfp_interest_ms = row.ttfp_interest_ms;
+      gtag("event", GA_RENAME[event] || event, p);
+    };
   };
 
   App.showConsent = function () {
@@ -132,20 +161,24 @@
       <p>본 페이지는 OTT 서비스 UI/UX 연구를 위한 <b>교육용 테스트 페이지</b>이며, 어떠한 영리 목적도 갖지 않습니다.</p>
       <p>실제 OTT 서비스 및 해당 기업과 관련이 없으며, 모든 콘텐츠·브랜드·이미지는 가상이거나 자유 이용 가능한 소재입니다.</p>
       <p>실제 결제·가입·영상 시청은 이루어지지 않습니다. <b>이름·연락처 같은 개인정보는 받지 않습니다.</b></p>
-      <p>클릭·재생 같은 익명 행동 기록과 관심사·찜·시청 기록은 <b>이 브라우저(기기)에만 저장</b>되며, 연구용 분석을 위해서만 쓰입니다. 화면 아래 '행동 로그 내보내기'로 직접 내보내거나 '로그 초기화'·'시청 기록 초기화'로 지울 수 있습니다. ${(App.analyticsTools || []).length ? `동의하시면 익명 행동 기록이 외부 분석 도구(${App.analyticsTools.join("·")})로도 전송되며 쿠키가 사용될 수 있습니다. 개인을 식별할 수 있는 정보는 전송하지 않습니다.` : "구글 애널리틱스(GA4)·메타 픽셀 같은 외부 분석·광고 도구는 사용하지 않으며, 기록이 외부로 전송되지 않습니다."}</p>
-      <div class="modal-actions"><button class="btn primary" id="consent-ok">동의하고 시작하기</button></div>
+      <p>클릭·재생 같은 익명 행동 기록과 관심사·찜·시청 기록은 <b>이 브라우저(기기)에 저장</b>되며, 연구용 분석을 위해서만 쓰입니다. 화면 아래 '행동 로그 내보내기'로 직접 내보내거나 '로그 초기화'·'시청 기록 초기화'로 지울 수 있습니다. ${(App.analyticsTools || []).length ? `동의하시면 익명 행동 기록이 외부 분석 도구(${App.analyticsTools.join("·")})로도 전송되며 쿠키가 사용될 수 있습니다. 개인을 식별할 수 있는 정보는 전송하지 않습니다. 동의하지 않아도 사이트를 둘러볼 수 있고, 화면 아래 '분석 동의 설정'에서 언제든 바꿀 수 있습니다.` : "구글 애널리틱스(GA4)·메타 픽셀 같은 외부 분석·광고 도구는 사용하지 않으며, 기록이 외부로 전송되지 않습니다."}</p>
+      <div class="modal-actions"><button class="btn" id="consent-no">분석 없이 둘러보기</button><button class="btn primary" id="consent-ok">동의하고 시작하기</button></div>
     </div>`;
     document.body.appendChild(ov);
     document.body.classList.add("no-scroll");
-    const ok = ov.querySelector("#consent-ok");
+    const ok = ov.querySelector("#consent-ok"), no = ov.querySelector("#consent-no");
     ok.focus();
-    ok.addEventListener("click", () => {
+    const decide = (ga) => {
       LS.set("consent_A", true);
-      Logger.log("consent_accept");
+      LS.set(CONSENT_GA, ga);
+      if (ga) App.initAnalytics(); else window["ga-disable-" + GA_ID] = true;
+      Logger.log("consent_accept", { value: ga ? "analytics_on" : "analytics_off" });
       ov.remove();
       document.body.classList.remove("no-scroll");
       App.showInterest();
-    });
+    };
+    ok.addEventListener("click", () => decide(true));
+    no.addEventListener("click", () => decide(false));
   };
 
   /* ───── 관심사 선택(1~3개, 건너뛰기 가능, 브라우저에만 저장) + 점수 — 홈 '회원님이 좋아할 만한 콘텐츠'용 ───── */
