@@ -3,6 +3,9 @@
   const VARIANT = "A";
   const GA_ID = "G-CTRCG6DCHH";                       // 구글 애널리틱스 4 측정 ID(공개 값). 동의한 사람에게만 로드
   const CONSENT_GA = "consent_ga_A";          // true=분석 동의, false=거부, 없음=아직 선택 안 함
+  /* 내부 테스트 표시: 주소 뒤에 ?internal=1 을 붙여 접속하면 이 브라우저를 내부 트래픽으로 표시(?internal=0 으로 해제). GA4 데이터 필터로 제외하기 위한 용도 */
+  try { const iq = new URLSearchParams(location.search).get("internal"); if (iq === "1") localStorage.setItem("ab_internal", "1"); else if (iq === "0") localStorage.removeItem("ab_internal"); } catch (e) {}
+  const INTERNAL = (() => { try { return localStorage.getItem("ab_internal") === "1"; } catch (e) { return false; } })();
   const LS = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -62,7 +65,7 @@
   /* ───── 데이터 ───── */
   const App = { data: null, byId: {}, LS, SS, Logger, VARIANT };
   App.load = async function () {
-    const r = await fetch("data/contents.json?v=20261127");
+    const r = await fetch("data/contents.json?v=20261128");
     if (!r.ok) throw new Error("contents.json 로드 실패");
     App.data = await r.json();
     App.data.contents.forEach((c) => (App.byId[c.id] = c));
@@ -118,7 +121,7 @@
     const f = document.createElement("footer");
     f.className = "site-footer";
     f.innerHTML = `<p>© 2026 교육용 UI/UX A/B 테스트 프로젝트 · 비영리 · 실제 서비스와 무관 · 모든 콘텐츠는 가상입니다.</p>
-      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a> · <a href="#" id="clear-watch">시청 기록 초기화</a> · <a href="#" id="ga-toggle">분석 동의 설정</a></p>`;
+      <p>이미지 출처: Openverse(CC0·공공 도메인·CC BY) — <a href="credits.html">출처 보기</a> · <a href="#" id="dl-log">행동 로그(CSV) 내보내기</a> · <a href="#" id="clear-log">로그 초기화</a> · <a href="#" id="clear-watch">시청 기록 초기화</a> · <a href="#" id="ga-toggle">분석 동의 설정</a>${INTERNAL ? ' · <a href="?internal=0">내부 테스트 모드 해제</a>' : ""}</p>`;
     document.body.appendChild(f);
     f.querySelector("#dl-log").addEventListener("click", (e) => { e.preventDefault(); Logger.download(); });
     f.querySelector("#ga-toggle").addEventListener("click", (e) => { e.preventDefault(); const on = LS.get(CONSENT_GA, null) === true; LS.set(CONSENT_GA, !on); window["ga-disable-" + GA_ID] = on; App.toast(on ? "분석 동의를 철회했어요. 새로고침합니다." : "분석에 동의했어요. 새로고침합니다."); setTimeout(() => location.reload(), 700); });
@@ -141,9 +144,12 @@
     document.head.appendChild(sc);
     gtag("js", new Date());
     gtag("set", "user_properties", { variant: VARIANT });
-    gtag("config", GA_ID, { variant: VARIANT, send_page_view: true, allow_google_signals: false, allow_ad_personalization_signals: false });
+    const cfg = { variant: VARIANT, send_page_view: true, allow_google_signals: false, allow_ad_personalization_signals: false };
+    if (INTERNAL) cfg.traffic_type = "internal";   // GA4 '내부 트래픽' 데이터 필터가 이 값을 보고 제외
+    gtag("config", GA_ID, cfg);
     App.gaSend = function (event, row) {
       const p = { variant: VARIANT };
+      if (INTERNAL) p.traffic_type = "internal";
       if (row.target_id) p.target_id = String(row.target_id).slice(0, 100);
       if (row.section) p.section = String(row.section).slice(0, 100);
       if (row.value != null && row.value !== "") p.event_value = String(row.value).slice(0, 100);
