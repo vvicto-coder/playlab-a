@@ -16,7 +16,7 @@
   <p><b>수정 사항 안내(CC BY 이미지):</b> 이 사이트의 모든 이미지는 화면에 맞추기 위해 <b>크기를 줄이고(가로 720px 기준), JPEG로 다시 저장했으며, 카드·배너 비율에 맞춰 일부를 잘라서(중앙 기준 확대·자르기)</b> 사용했습니다. 그 밖의 색상·내용 변경은 하지 않았습니다. 라이선스 조건에 따라 저작자·라이선스·원본 링크를 아래 표에 표시합니다. CC0·공공 도메인 이미지는 표시 의무가 없으나 함께 적었습니다.</p>
   <div style="overflow-x:auto"><table class="credit-table"><thead><tr><th>가상 작품</th><th>이미지</th><th>저작자</th><th>라이선스</th><th>원본</th></tr></thead><tbody id="rows"></tbody></table></div>
 </main>
-<script src="js/common.js?v=46"></script>
+<script src="js/common.js?v=47"></script>
 <script>
   App.mountShell();
   Promise.all([fetch("data/image_credits.json").then(r => r.json()), fetch("data/sports_credits.json").then(r => r.json()).catch(() => ({}))]).then(([a, b]) => {

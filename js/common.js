@@ -148,6 +148,7 @@
     if (INTERNAL) cfg.traffic_type = "internal";   // GA4 '내부 트래픽' 데이터 필터가 이 값을 보고 제외
     gtag("config", GA_ID, cfg);
     App.gaSend = function (event, row) {
+      if (event === "hero_slide_change" && row.value === "auto") return;   // 자동 슬라이드 전환은 GA4로 보내지 않음(브라우저 로그 CSV에는 남음)
       const p = { variant: VARIANT };
       if (INTERNAL) p.traffic_type = "internal";
       if (row.target_id) p.target_id = String(row.target_id).slice(0, 100);
