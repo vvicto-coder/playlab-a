@@ -128,7 +128,7 @@
     f.querySelector("#clear-watch").addEventListener("click", (e) => { e.preventDefault(); LS.set("behav_A", { click: [], play: [] }); App.toast("시청 기록을 초기화했어요"); setTimeout(() => location.reload(), 600); });
     f.querySelector("#clear-log").addEventListener("click", (e) => { e.preventDefault(); Logger.clear(); App.toast("로그를 초기화했어요"); });
 
-    if (!LS.get("consent_A", false) || LS.get(CONSENT_GA, null) === null) App.showConsent(); else { App.initAnalytics(); App.showInterest(); }
+    if (!LS.get("consent_A", false) || LS.get(CONSENT_GA, null) !== true) App.showConsent();   // 분석 동의한 사람만 이용(예전에 거부한 사람도 다시 안내) else { App.initAnalytics(); App.showInterest(); }
   };
 
   /* ───── 구글 애널리틱스 4(GA4): 동의한 사람에게만 로드. 이름·연락처 등 개인정보는 보내지 않음 ───── */
@@ -168,12 +168,12 @@
       <p>본 페이지는 OTT 서비스 UI/UX 연구를 위한 <b>교육용 테스트 페이지</b>이며, 어떠한 영리 목적도 갖지 않습니다.</p>
       <p>실제 OTT 서비스 및 해당 기업과 관련이 없으며, 모든 콘텐츠·브랜드·이미지는 가상이거나 자유 이용 가능한 소재입니다.</p>
       <p>실제 결제·가입·영상 시청은 이루어지지 않습니다. <b>이름·연락처 같은 개인정보는 받지 않습니다.</b></p>
-      <p>클릭·재생 같은 익명 행동 기록과 관심사·찜·시청 기록은 <b>이 브라우저(기기)에 저장</b>되며, 연구용 분석을 위해서만 쓰입니다. 화면 아래 '행동 로그 내보내기'로 직접 내보내거나 '로그 초기화'·'시청 기록 초기화'로 지울 수 있습니다. ${(App.analyticsTools || []).length ? `동의하시면 익명 행동 기록이 외부 분석 도구(${App.analyticsTools.join("·")})로도 전송되며 쿠키가 사용될 수 있습니다. 개인을 식별할 수 있는 정보는 전송하지 않습니다. 동의하지 않아도 사이트를 둘러볼 수 있고, 화면 아래 '분석 동의 설정'에서 언제든 바꿀 수 있습니다.` : "구글 애널리틱스(GA4)·메타 픽셀 같은 외부 분석·광고 도구는 사용하지 않으며, 기록이 외부로 전송되지 않습니다."}</p>
-      <div class="modal-actions"><button class="btn" id="consent-no">분석 없이 둘러보기</button><button class="btn primary" id="consent-ok">동의하고 시작하기</button></div>
+      <p>클릭·재생 같은 익명 행동 기록과 관심사·찜·시청 기록은 <b>이 브라우저(기기)에 저장</b>되며, 연구용 분석을 위해서만 쓰입니다. 화면 아래 '행동 로그 내보내기'로 직접 내보내거나 '로그 초기화'·'시청 기록 초기화'로 지울 수 있습니다. ${(App.analyticsTools || []).length ? `동의하시면 익명 행동 기록이 외부 분석 도구(${App.analyticsTools.join("·")})로도 전송되며 쿠키가 사용될 수 있습니다. 개인을 식별할 수 있는 정보는 전송하지 않습니다. 이 연구는 분석에 동의한 뒤 참여할 수 있습니다. 동의하지 않으시면 이 창을 닫아 주세요. 참여 중에도 화면 아래 '분석 동의 설정'에서 언제든 동의를 철회할 수 있습니다.` : "구글 애널리틱스(GA4)·메타 픽셀 같은 외부 분석·광고 도구는 사용하지 않으며, 기록이 외부로 전송되지 않습니다."}</p>
+      <div class="modal-actions"><button class="btn primary" id="consent-ok">동의하고 시작하기</button></div>
     </div>`;
     document.body.appendChild(ov);
     document.body.classList.add("no-scroll");
-    const ok = ov.querySelector("#consent-ok"), no = ov.querySelector("#consent-no");
+    const ok = ov.querySelector("#consent-ok");
     ok.focus();
     const decide = (ga) => {
       LS.set("consent_A", true);
@@ -185,7 +185,6 @@
       App.showInterest();
     };
     ok.addEventListener("click", () => decide(true));
-    no.addEventListener("click", () => decide(false));
   };
 
   /* ───── 관심사 선택(1~3개, 건너뛰기 가능, 브라우저에만 저장) + 점수 — 홈 '회원님이 좋아할 만한 콘텐츠'용 ───── */
