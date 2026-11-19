@@ -128,7 +128,8 @@
     f.querySelector("#clear-watch").addEventListener("click", (e) => { e.preventDefault(); LS.set("behav_A", { click: [], play: [] }); App.toast("시청 기록을 초기화했어요"); setTimeout(() => location.reload(), 600); });
     f.querySelector("#clear-log").addEventListener("click", (e) => { e.preventDefault(); Logger.clear(); App.toast("로그를 초기화했어요"); });
 
-    if (!LS.get("consent_A", false) || LS.get(CONSENT_GA, null) !== true) App.showConsent();   // 분석 동의한 사람만 이용(예전에 거부한 사람도 다시 안내) else { App.initAnalytics(); App.showInterest(); }
+    if (!LS.get("consent_A", false) || LS.get(CONSENT_GA, null) !== true) App.showConsent();
+    else { App.initAnalytics(); App.showInterest(); }   // 분석 동의한 사람만 이용(예전에 거부한 사람도 다시 안내). 이미 동의한 사람은 페이지마다 GA4 시작
   };
 
   /* ───── 구글 애널리틱스 4(GA4): 동의한 사람에게만 로드. 이름·연락처 등 개인정보는 보내지 않음 ───── */
